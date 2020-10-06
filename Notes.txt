@@ -1,0 +1,24 @@
+-------------------------------------------------------------------------------
+
+Night 1
+
+On display, show
+mph/kmh
+dist mile dist km
+time elapsed
+
+26" wheel = what tire size
+~85.75 inches, 217.8cm
+
+1 mile is 63360 inches
+1km is 100000cm
+1 mile = ~738.9 rotations of tire
+1 km = ~459.136 rotations of tire
+
+how should I calculate mph/kmh?
+
+each reading = 85.75 inches or 217.8 cm
+if a reading is 1 second apart, speed is
+
+take an average of the last 3 readings
+
