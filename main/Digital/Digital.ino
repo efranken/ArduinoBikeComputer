@@ -21,7 +21,13 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
 
-  Serial.println(digitalRead(12));
+  //Serial.println(digitalRead(12));
+
+  if (digitalRead(12) == 0) {
+    Serial.println("Magnet");
+  } else {
+    Serial.println("No Magnet");
+  }
   //val = analogRead(analogPin);
 
   //Serial.println(val);
