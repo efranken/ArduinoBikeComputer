@@ -1,3 +1,17 @@
+oct 8 2020
+
+https://www.instructables.com/Cheap-TFT-22-inch-Display-on-Arduino-ILI9340C-or-I/
+
+
+
+-------------------------------------------------------------------------------
+
+Day 2
+
+get hard drive magnet
+
+figure out logic for changing with error detection
+
 -------------------------------------------------------------------------------
 
 Night 1
