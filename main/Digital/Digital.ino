@@ -11,7 +11,7 @@
 
 //int val = 0;
 
-//int digitalPin = D12;
+//int digitalPin = D7;
 
 void setup() {
   // put your setup code here, to run once:
@@ -23,7 +23,7 @@ void loop() {
 
   //Serial.println(digitalRead(12));
 
-  if (digitalRead(12) == 0) {
+  if (digitalRead(7) == 0) {
     Serial.println("Magnet");
   } else {
     Serial.println("No Magnet");
