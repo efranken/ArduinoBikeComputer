@@ -1,7 +1,7 @@
 #include "Nextion.h"
 
-const byte ReedPin = 11; // pin connected to reed switch
-const float WheelRadius = 0.00131;// the wheel radius in miles
+const byte ReedPin = 3; // pin connected to reed switch
+const float WheelRadius = 0.00020728245;// the wheel radius in miles
 const float WheelCircumference = 2 * PI * WheelRadius;
 const float MPHconst = WheelCircumference * 3600000.0; // Killometers per hour at 1 revolution per millisecond.
 
@@ -10,7 +10,7 @@ float elapsedHr;
 NexText avgmph = NexText(0, 4, "avgmph");
 NexText timer = NexText(0, 5, "time");
 NexText mph = NexText(0, 6, "mph");
-NexText kph = NexText(0, 7, "kph");
+NexText distance = NexText(0, 9, "distance");
 
 const unsigned DebounceTime = 10;  // Milliseconds of bouncing to ignore
 
@@ -56,7 +56,7 @@ ISR(TIMER1_COMPA_vect)
 
   unsigned long currentTime = millis();
 
-  
+
   boolean reedIsClosed = digitalRead(ReedPin);
 
   // Check for state change
@@ -68,7 +68,7 @@ ISR(TIMER1_COMPA_vect)
     {
       // Reed Has Just Closed
       TotalDistance += WheelCircumference;
-      
+
       // KPHconst is KPH at 1 revolution per tick.
       CurrentVelocity = MPHconst / TickCounter;
       if (CurrentVelocity < 100)
@@ -77,7 +77,7 @@ ISR(TIMER1_COMPA_vect)
         totalTick += 1;
         avgMph = totalVelocity / totalTick;
       }
-      
+
       TickCounter = 0;
     }
   }
@@ -100,46 +100,68 @@ void displayText()
   // we have to make local copies while interrupts are disables.  If we don't
   // the value of the variable might change half-way thourgh fetching!
 
-  unsigned long allSeconds=millis()/1000; //time calculation variables, these get placed here because if they are outside
-  int secsRemaining=allSeconds%3600;      //of a loop or looped function they will never update
-  int runMinutes=secsRemaining/60;
-  int runSeconds=secsRemaining%60;
+  unsigned long allSeconds = millis() / 1000; //time calculation variables, these get placed here because if they are outside
+  int secsRemaining = allSeconds % 3600;  //of a loop or looped function they will never update
+  int runMinutes = secsRemaining / 60;
+  int runSeconds = secsRemaining % 60;
 
 
   float localTotalDistance;
+  float localTotalDistanceFT;
+  float localTotalDistanceMI;
   float localCurrentVelocity;
   float localCurrentVelocityK;
   float localAvgMph;
-  
+
   noInterrupts();
   localTotalDistance = TotalDistance;
   localCurrentVelocity = CurrentVelocity;
   localCurrentVelocityK = CurrentVelocity * 1.60934;
   localAvgMph = avgMph;
   interrupts();
+  localTotalDistanceFT = ((localTotalDistance * 5280) / 12);
+  localTotalDistanceMI = localTotalDistance / 12;
 
 
   //  Serial.print(int(localCurrentVelocity));
   //  Serial.println(" km/h");
   //
-   if (TotalDistance > 1) {
-    Serial.print(localTotalDistance);
-     Serial.println(" km");
-   }
-    else {
-     Serial.print(int(localTotalDistance * 1000.0));
-     Serial.println(" m");
- }
 
-//time elapsed
+
+  //Distance
+
+  char dist[21];
+  if (((TotalDistance * 5280) / 12) > 5280) {
+    Serial.print(localTotalDistance / 12);
+    Serial.println(" M");
+    dtostrf(localTotalDistanceMI, 4, 3, dist);
+    nexSerial.write(0xFF);
+    nexSerial.write(0xFF);
+    nexSerial.write(0xFF);
+    distance.setText(dist);
+  }
+  else {
+    Serial.print(int(localTotalDistance * 1000.0));
+    Serial.println(" FT");
+    dtostrf(localTotalDistanceFT, 4, 1, dist);
+    nexSerial.write(0xFF);
+    nexSerial.write(0xFF);
+    nexSerial.write(0xFF);
+    distance.setText(dist);
+  }
+
+
+
+
+  //time elapsed
   char elapsed[21];
-  sprintf(elapsed,"%02d:%02d",runMinutes,runSeconds);  
+  sprintf(elapsed, "%02d:%02d", runMinutes, runSeconds);
   nexSerial.write(0xFF);
   nexSerial.write(0xFF);
   nexSerial.write(0xFF);
   timer.setText(elapsed);
 
-//avgmph
+  //avgmph
   char speedoAvg[4];
   dtostrf(localAvgMph, 4, 1, speedoAvg);
   Serial.println(localCurrentVelocity);
@@ -149,7 +171,7 @@ void displayText()
   avgmph.setText(speedoAvg);
 
 
-//mph
+  //mph
   char speedoM[4];
   dtostrf(localCurrentVelocity, 4, 1, speedoM);
   Serial.println(localCurrentVelocity);
@@ -158,12 +180,13 @@ void displayText()
   nexSerial.write(0xFF);
   mph.setText(speedoM);
 
-//kph
-  char speedoK[4];
-  dtostrf(localCurrentVelocityK, 4, 1, speedoK);
-  Serial.println(localCurrentVelocityK);
-  nexSerial.write(0xFF);
-  nexSerial.write(0xFF);
-  nexSerial.write(0xFF);
-  kph.setText(speedoK);
+  //
+  ////kph
+  //  char speedoK[4];
+  //  dtostrf(localCurrentVelocityK, 4, 1, speedoK);
+  //  Serial.println(localCurrentVelocityK);
+  //  nexSerial.write(0xFF);
+  //  nexSerial.write(0xFF);
+  //  nexSerial.write(0xFF);
+  //  kph.setText(speedoK);
 }
