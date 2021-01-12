@@ -119,8 +119,8 @@ void displayText()
   localCurrentVelocityK = CurrentVelocity * 1.60934;
   localAvgMph = avgMph;
   interrupts();
-  localTotalDistanceFT = ((localTotalDistance * 5280) / 12);
-  localTotalDistanceMI = localTotalDistance / 12;
+  localTotalDistanceFT = (localTotalDistance * 5280);
+  localTotalDistanceMI = localTotalDistance;
 
 
   //  Serial.print(int(localCurrentVelocity));
